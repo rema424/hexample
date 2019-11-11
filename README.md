@@ -1,0 +1,2 @@
+# go-appengine-clean-architecture
+Goっぽいプロジェクト構成でクリーンアーキテクチャ的なことをやるリポジトリ
