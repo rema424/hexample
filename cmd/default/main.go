@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -43,8 +44,10 @@ func init() {
 	e.Validator = server.CreateCustomValidator(map[string]validator.Func{})
 
 	// DI
+	ctrl := InitializeControllers(acsr)
 
 	// Routes
+	fmt.Println(ctrl)
 }
 
 func main() {
