@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rema424/hexample/internal/hexample"
+	"github.com/rema424/hexample/internal/service1"
 	"github.com/spf13/cobra"
 )
 
@@ -18,12 +18,12 @@ var rootCmd = &cobra.Command{
 			msg = "Hello, from cli!"
 		}
 
-		arg := hexample.AppCoreLogicIn{
+		arg := service1.AppCoreLogicIn{
 			From:    "cli",
 			Message: msg,
 		}
 
-		hexample.AppCoreLogic(context.Background(), arg)
+		service1.AppCoreLogic(context.Background(), arg)
 	},
 }
 

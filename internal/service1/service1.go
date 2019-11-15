@@ -1,4 +1,4 @@
-package hexample
+package service1
 
 import (
 	"context"
@@ -13,6 +13,9 @@ type AppCoreLogicIn struct {
 
 // AppCoreLogic .
 func AppCoreLogic(ctx context.Context, in AppCoreLogicIn) {
+	fmt.Println("--------------------------------------------------")
+	fmt.Println("service1:")
 	fmt.Println("this is application core logic.")
-	fmt.Println("from:", in.From, "message:", in.Message)
+	fmt.Printf("from: %s, message: %s\n", in.From, in.Message)
+	fmt.Println("--------------------------------------------------")
 }
