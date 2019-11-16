@@ -36,11 +36,10 @@ func String(length int, charsets ...string) string {
 	if charset == "" {
 		charset = Alphanumeric
 	}
-
-	charN := len(charset)                                // Alphanumeric なら 62 文字
-	idxBits := int(math.Ceil(math.Log2(float64(charN)))) // idxBits = 6; 2 ^ 6 = 64 >= 62文字
-	idxMask := int64(1<<idxBits - 1)                     // 00000001 -> 01000000 -> 00111111 -> 下位 6 bit
-	idxMax := 63 / idxBits                               // 63/6 = 10 -> 1回の擬似乱数生成で10文字を取得できる
+	// Alphanumeric なら 62 文字
+	idxBits := int(math.Ceil(math.Log2(float64(len(charset))))) // idxBits = 6; 2 ^ 6 = 64 >= 62文字
+	idxMask := int64(1<<idxBits - 1)                            // 00000001 -> 01000000 -> 00111111 -> 下位 6 bit
+	idxMax := 63 / idxBits                                      // 63/6 = 10 -> 1回の擬似乱数生成で10文字を取得できる
 
 	b := make([]byte, length)
 	for i, cache, remain := length-1, src.Int63(), idxMax; i >= 0; {
