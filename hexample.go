@@ -12,7 +12,7 @@ func Run(ctx context.Context, msg string) {
 		msg = "Hello, from external pkg!"
 	}
 	arg := service1.AppCoreLogicIn{
-		From:    "external",
+		From:    "external pkg",
 		Message: msg,
 	}
 	service1.AppCoreLogic(ctx, arg)
