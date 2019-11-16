@@ -29,7 +29,7 @@ const (
 
 var src = rand.NewSource(time.Now().UnixNano())
 
-// String generates rondom string.
+// String generates random string.
 // ref: https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-golang
 func String(length int, charsets ...string) string {
 	charset := strings.Join(charsets, "")
@@ -60,7 +60,7 @@ func String(length int, charsets ...string) string {
 	return string(b)
 }
 
-// StringPreOptimized generates rondom string.
+// StringPreOptimized generates random string.
 // ref: github.com/labstack/gommon/random/random.go
 func StringPreOptimized(length uint8, charsets ...string) string {
 	charset := strings.Join(charsets, "")
