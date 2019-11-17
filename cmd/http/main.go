@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/rema424/hexample/cmd/http/controller"
 	"github.com/rema424/hexample/internal/service2"
 	"github.com/rema424/hexample/internal/service3"
 	"github.com/rema424/hexample/pkg/mysql"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/rema424/sqlxx"
 )
 
 var e = createMux()
@@ -43,6 +45,10 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	acsr, err := sqlxx.Open(db)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Service2
 	gateway2 := service2.NewGateway(db)
@@ -51,8 +57,10 @@ func init() {
 	// provider2 := service2.NewProvider(mockGateway2)
 
 	// Service3
-	mockGateway3 := service3.NewMockGateway(service3.NewMockDB())
-	provider3 := service3.NewProvider(mockGateway3)
+	gateway3 := service3.NewGateway(acsr)
+	provider3 := service3.NewProvider(gateway3)
+	// mockGateway3 := service3.NewMockGateway(service3.NewMockDB())
+	// provider3 := service3.NewProvider(mockGateway3)
 
 	ctrl := &controller.Controller{}
 	ctrl2 := controller.NewController2(provider2)
