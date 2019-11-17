@@ -2,6 +2,7 @@ package service3
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/rema424/sqlxx"
@@ -34,54 +35,43 @@ func (g *Gateway) OpenAccount(ctx context.Context, initialAmmount int) (Account,
 	return Account{ID: id, Balance: initialAmmount}, nil
 }
 
-// IsBalanceSufficient ...
-func (g *Gateway) IsBalanceSufficient(ctx context.Context, accountID int64, ammount int) (bool, error) {
-	// 行ロックを取得する（FOR UPDATE）
-	q := `SELECT COALESCE(balance, 0) AS 'tekitode' FROM account WHERE id = ? FOR UPDATE;`
-
-	// 残高を取得
-	var b int
-	if err := g.db.Get(ctx, &b, q, accountID); err != nil {
-		return false, err
-	}
-
-	// 残高を確認
-	return b >= ammount, nil
-}
-
-// DecreaseBalance ...
-func (g *Gateway) DecreaseBalance(ctx context.Context, id int64, ammount int) (Account, error) {
-	q := `UPDATE account SET balance = balance - ? WHERE id = ?;`
-	_, err := g.db.Exec(ctx, q, ammount, id)
-	if err != nil {
-		return Account{}, err
-	}
-
-	return g.getAccountByID(ctx, id)
-}
-
-// IncreaseBalance ...
-func (g *Gateway) IncreaseBalance(ctx context.Context, id int64, ammount int) (Account, error) {
-	q := `UPDATE account SET balance = balance + ? WHERE id = ?;`
-	_, err := g.db.Exec(ctx, q, ammount, id)
-	if err != nil {
-		return Account{}, err
-	}
-
-	return g.getAccountByID(ctx, id)
-}
-
-func (g *Gateway) getAccountByID(ctx context.Context, id int64) (Account, error) {
+// GetAccountsForTransfer ...
+func (g *Gateway) GetAccountsForTransfer(ctx context.Context, fromID, toID int64) (from, to Account, err error) {
+	// 送金に関わるアカウントにはロックをかけて取得する
 	q := `
 SELECT
   COALESCE(id, 0) AS 'aikawarazu',
   COALESCE(balance, 0) AS 'tekitode'
 FROM account
-WHERE id = ?;
+WHERE id = ? OR id = ?
+FOR UPDATE;
 `
-	var a Account
-	if err := g.db.Get(ctx, &a, q, id); err != nil {
-		return a, err
+	var dest []Account
+	if err := g.db.Select(ctx, &dest, q, fromID, toID); err != nil {
+		return from, to, err
+	}
+
+	if len(dest) != 2 {
+		return from, to, fmt.Errorf("gateway: account not found for transfer")
+	}
+
+	for _, a := range dest {
+		if a.ID == fromID {
+			from = a
+		} else if a.ID == toID {
+			to = a
+		}
+	}
+
+	return from, to, nil
+}
+
+// UpdateBalance ...
+func (g *Gateway) UpdateBalance(ctx context.Context, a Account) (Account, error) {
+	q := `UPDATE account SET balance = :tekitode WHERE id = :aikawarazu;`
+	_, err := g.db.NamedExec(ctx, q, a)
+	if err != nil {
+		return Account{}, err
 	}
 	return a, nil
 }

@@ -40,25 +40,42 @@ func (p *Provider) Transfer(ctx context.Context, ammount int, fromID, toID int64
 	}
 
 	txFn := func(ctx context.Context) (interface{}, error) {
+		// 送金元、送金先の口座を取得する
+		from, to, err := p.r.GetAccountsForTransfer(ctx, fromID, toID)
+		if err != nil {
+			return Accounts{}, err
+		}
+
 		// 送金元の残高を確認
-		b, err := p.r.IsBalanceSufficient(ctx, fromID, ammount)
-		if err != nil {
-			return Accounts{}, err
-		} else if !b {
-			return Accounts{}, fmt.Errorf("provider: balance is not sufficient - accountID: %d", fromID)
+		if !from.IsSufficient(ammount) {
+			return Accounts{}, fmt.Errorf("provider: balance is not sufficient - accountID: %d", from.ID)
 		}
 
-		// 送金元の残高を減らす
-		from, err := p.r.DecreaseBalance(ctx, fromID, ammount)
+		// 送金する
+		from.Transfer(ammount, &to)
+
+		// 送金元の残高を更新する
+		from, err = p.r.UpdateBalance(ctx, from)
 		if err != nil {
 			return Accounts{}, err
 		}
 
-		// 送金先の残高を増やす
-		to, err := p.r.IncreaseBalance(ctx, toID, ammount)
+		// 送金先の残高を更新する
+		to, err = p.r.UpdateBalance(ctx, to)
 		if err != nil {
 			return Accounts{}, err
 		}
+
+		// from, err = p.r.DecreaseBalance(ctx, fromID, ammount)
+		// if err != nil {
+		// 	return Accounts{}, err
+		// }
+
+		// // 送金先の残高を増やす
+		// to, err := p.r.IncreaseBalance(ctx, toID, ammount)
+		// if err != nil {
+		// 	return Accounts{}, err
+		// }
 
 		return Accounts{from: from, to: to}, nil
 	}

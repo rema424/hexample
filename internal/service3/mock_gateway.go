@@ -57,65 +57,36 @@ func (g *MockGateway) OpenAccount(ctx context.Context, initialAmmount int) (Acco
 	return a, nil
 }
 
-// IsBalanceSufficient ...
-func (g *MockGateway) IsBalanceSufficient(ctx context.Context, accountID int64, ammount int) (bool, error) {
+// GetAccountsForTransfer ...
+func (g *MockGateway) GetAccountsForTransfer(ctx context.Context, fromID, toID int64) (from, to Account, err error) {
 	if !isInTx(ctx) {
 		g.db.mu.Lock()
 		defer g.db.mu.Unlock()
 	}
 
-	account, ok := g.db.data[accountID]
+	var ok bool
+	from, ok = g.db.data[fromID]
 	if !ok {
-		return false, fmt.Errorf("gateway: account not found - id: %d", accountID)
+		return Account{}, Account{}, fmt.Errorf("gateway: account not found - accoutID: %d", fromID)
 	}
 
-	return account.Balance >= ammount, nil
-}
-
-func (g *MockGateway) getAccountByID(ctx context.Context, accountID int64) (Account, error) {
-	if !isInTx(ctx) {
-		g.db.mu.Lock()
-		defer g.db.mu.Unlock()
-	}
-
-	account, ok := g.db.data[accountID]
+	to, ok = g.db.data[toID]
 	if !ok {
-		return Account{}, fmt.Errorf("gateway: account not found - id: %d", accountID)
+		return Account{}, Account{}, fmt.Errorf("gateway: account not found - accoutID: %d", toID)
 	}
 
-	return account, nil
+	return from, to, nil
 }
 
-// DecreaseBalance ...
-func (g *MockGateway) DecreaseBalance(ctx context.Context, id int64, ammount int) (Account, error) {
+// UpdateBalance ...
+func (g *MockGateway) UpdateBalance(ctx context.Context, a Account) (Account, error) {
 	if !isInTx(ctx) {
 		g.db.mu.Lock()
 		defer g.db.mu.Unlock()
 	}
 
-	account, err := g.getAccountByID(ctx, id)
-	if err != nil {
-		return Account{}, err
-	}
-	account.Balance -= ammount
-	g.db.data[id] = account
-	return account, nil
-}
-
-// IncreaseBalance ...
-func (g *MockGateway) IncreaseBalance(ctx context.Context, id int64, ammount int) (Account, error) {
-	if !isInTx(ctx) {
-		g.db.mu.Lock()
-		defer g.db.mu.Unlock()
-	}
-
-	account, err := g.getAccountByID(ctx, id)
-	if err != nil {
-		return Account{}, err
-	}
-	account.Balance += ammount
-	g.db.data[id] = account
-	return account, nil
+	g.db.data[a.ID] = a
+	return a, nil
 }
 
 // RunInTransaction ...
