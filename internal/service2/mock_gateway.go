@@ -10,8 +10,8 @@ import (
 
 var src = rand.NewSource(time.Now().UnixNano())
 
-// RepositoryImplMock ...
-type RepositoryImplMock struct {
+// MockGateway ...
+type MockGateway struct {
 	db *MockDB
 }
 
@@ -26,13 +26,13 @@ func NewMockDB() *MockDB {
 	return &MockDB{data: make(map[int64]Person)}
 }
 
-// NewRepositoryImplMock ...
-func NewRepositoryImplMock(db *MockDB) *RepositoryImplMock {
-	return &RepositoryImplMock{db}
+// NewMockGateway ...
+func NewMockGateway(db *MockDB) *MockGateway {
+	return &MockGateway{db}
 }
 
 // RegisterPerson ...
-func (r *RepositoryImplMock) RegisterPerson(ctx context.Context, p Person) (Person, error) {
+func (r *MockGateway) RegisterPerson(ctx context.Context, p Person) (Person, error) {
 	r.db.mu.Lock()
 	defer r.db.mu.Unlock()
 
@@ -53,7 +53,7 @@ func (r *RepositoryImplMock) RegisterPerson(ctx context.Context, p Person) (Pers
 }
 
 // GetPersonByID ...
-func (r *RepositoryImplMock) GetPersonByID(ctx context.Context, id int64) (Person, error) {
+func (r *MockGateway) GetPersonByID(ctx context.Context, id int64) (Person, error) {
 	r.db.mu.RLock()
 	defer r.db.mu.RUnlock()
 

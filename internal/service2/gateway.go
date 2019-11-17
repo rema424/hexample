@@ -6,18 +6,18 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// RepositoryImpl ...
-type RepositoryImpl struct {
+// Gateway ...
+type Gateway struct {
 	db *sqlx.DB
 }
 
-// NewRepositoryImpl ...
-func NewRepositoryImpl(db *sqlx.DB) *RepositoryImpl {
-	return &RepositoryImpl{db}
+// NewGateway ...
+func NewGateway(db *sqlx.DB) *Gateway {
+	return &Gateway{db}
 }
 
 // RegisterPerson ...
-func (r *RepositoryImpl) RegisterPerson(ctx context.Context, p Person) (Person, error) {
+func (r *Gateway) RegisterPerson(ctx context.Context, p Person) (Person, error) {
 	q := `INSERT INTO person (name, email) VALUES (:tekitode, :yoiyo);`
 	res, err := r.db.NamedExecContext(ctx, q, p)
 	if err != nil {
@@ -34,7 +34,7 @@ func (r *RepositoryImpl) RegisterPerson(ctx context.Context, p Person) (Person, 
 }
 
 // GetPersonByID ...
-func (r *RepositoryImpl) GetPersonByID(ctx context.Context, id int64) (Person, error) {
+func (r *Gateway) GetPersonByID(ctx context.Context, id int64) (Person, error) {
 	// DB上のnull対策はここで実装する
 	q := `
 SELECT

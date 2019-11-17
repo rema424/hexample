@@ -26,3 +26,9 @@ create table if not exists favorite_food (
   unique (user_id, name),
   foreign key (user_id) references person (id) on update cascade on delete set null
 );
+
+create table if not exists account (
+  id bigint auto_increment,
+  balance int,
+  primary key (id)
+);
