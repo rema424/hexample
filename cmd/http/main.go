@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rema424/hexample/cmd/http/controller"
 	"github.com/rema424/hexample/internal/service2"
+	"github.com/rema424/hexample/internal/service3"
 )
 
 var e = createMux()
@@ -45,16 +46,24 @@ func init() {
 	// svc2Pvdr := service2.NewProvider(svc2Repo)
 
 	// MockDB
-	mockDB := service2.NewMockDB()
-	svc2RepoMock := service2.NewRepositoryImplMock(mockDB)
-	svc2Pvdr := service2.NewProvider(svc2RepoMock)
+	mockDB2 := service2.NewMockDB()
+	mockRepository2 := service2.NewRepositoryImplMock(mockDB2)
+	provider2 := service2.NewProvider(mockRepository2)
+
+	// Service3
+	mockDB3 := service3.NewMockDB()
+	mockGateway3 := service3.NewMockGateway(mockDB3)
+	provider3 := service3.NewProvider(mockGateway3)
 
 	ctrl := &controller.Controller{}
-	ctrl2 := controller.NewController2(svc2Pvdr)
+	ctrl2 := controller.NewController2(provider2)
+	ctrl3 := controller.NewController3(provider3)
 
 	e.GET("/:message", ctrl.HandleMessage)
 	e.GET("/people/:personID", ctrl2.HandlePersonGet)
 	e.POST("/people", ctrl2.HandlePersonRegister)
+	e.POST("/accounts", ctrl3.HandleAccountOpen)
+	e.POST("/accounts/transfer", ctrl3.HandleMoneyTransfer)
 }
 
 func createMux() *echo.Echo {
