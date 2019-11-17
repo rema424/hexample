@@ -20,7 +20,7 @@ type MockGateway struct {
 }
 
 // NewMockGateway ...
-func NewMockGateway(db *MockDB) *MockGateway {
+func NewMockGateway(db *MockDB) Repository {
 	return &MockGateway{db}
 }
 
@@ -119,7 +119,7 @@ func (g *MockGateway) IncreaseBalance(ctx context.Context, id int64, ammount int
 }
 
 // RunInTransaction ...
-func (g *MockGateway) RunInTransaction(ctx context.Context, txFn TxFn) (interface{}, error) {
+func (g *MockGateway) RunInTransaction(ctx context.Context, txFn func(context.Context) (interface{}, error)) (interface{}, error) {
 	// 多重トランザクションはエラーとする
 	if isInTx(ctx) {
 		return nil, fmt.Errorf("gateway: detect nested transaction")

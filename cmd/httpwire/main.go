@@ -6,9 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/rema424/hexample/cmd/http/controller"
-	"github.com/rema424/hexample/internal/service2"
-	"github.com/rema424/hexample/internal/service3"
 	"github.com/rema424/hexample/pkg/mysql"
 
 	"github.com/labstack/echo/v4"
@@ -50,27 +47,37 @@ func init() {
 		log.Fatalln(err)
 	}
 
+	// --------------------------------------------------
+	// 手動でDI
+	// --------------------------------------------------
+
 	// Service2
-	gateway2 := service2.NewGateway(db)
-	provider2 := service2.NewProvider(gateway2)
+	// gateway2 := service2.NewGateway(db)
+	// provider2 := service2.NewProvider(gateway2)
 	// mockGateway2 := service2.NewMockGateway(service2.NewMockDB())
 	// provider2 := service2.NewProvider(mockGateway2)
 
 	// Service3
-	gateway3 := service3.NewGateway(acsr)
-	provider3 := service3.NewProvider(gateway3)
+	// gateway3 := service3.NewGateway(acsr)
+	// provider3 := service3.NewProvider(gateway3)
 	// mockGateway3 := service3.NewMockGateway(service3.NewMockDB())
 	// provider3 := service3.NewProvider(mockGateway3)
 
-	ctrl := &controller.Controller{}
-	ctrl2 := controller.NewController2(provider2)
-	ctrl3 := controller.NewController3(provider3)
+	// ctrl := &controller.Controller{}
+	// ctrl2 := controller.NewController2(provider2)
+	// ctrl3 := controller.NewController3(provider3)
 
-	e.GET("/:message", ctrl.HandleMessage)
-	e.GET("/people/:personID", ctrl2.HandlePersonGet)
-	e.POST("/people", ctrl2.HandlePersonRegister)
-	e.POST("/accounts", ctrl3.HandleAccountOpen)
-	e.POST("/accounts/transfer", ctrl3.HandleMoneyTransfer)
+	// --------------------------------------------------
+	// wireでDI
+	// --------------------------------------------------
+
+	ctrls := InitializeControllers(db, acsr)
+
+	e.GET("/:message", ctrls.Ctrl.HandleMessage)
+	e.GET("/people/:personID", ctrls.Ctrl2.HandlePersonGet)
+	e.POST("/people", ctrls.Ctrl2.HandlePersonRegister)
+	e.POST("/accounts", ctrls.Ctrl3.HandleAccountOpen)
+	e.POST("/accounts/transfer", ctrls.Ctrl3.HandleMoneyTransfer)
 }
 
 func createMux() *echo.Echo {

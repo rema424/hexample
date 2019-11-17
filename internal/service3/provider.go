@@ -1,8 +1,9 @@
 package service3
 
-import "context"
-
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // Provider ...
 type Provider struct {
@@ -29,6 +30,10 @@ func (p *Provider) OpenAccount(ctx context.Context, initialAmmount int) (Account
 
 // Transfer ...
 func (p *Provider) Transfer(ctx context.Context, ammount int, fromID, toID int64) (from, to Account, err error) {
+	if fromID == toID {
+		return Account{}, Account{}, fmt.Errorf("provider: cannot transfer money to oneself")
+	}
+
 	type Accounts struct {
 		from Account
 		to   Account
