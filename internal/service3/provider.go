@@ -66,17 +66,6 @@ func (p *Provider) Transfer(ctx context.Context, ammount int, fromID, toID int64
 			return Accounts{}, err
 		}
 
-		// from, err = p.r.DecreaseBalance(ctx, fromID, ammount)
-		// if err != nil {
-		// 	return Accounts{}, err
-		// }
-
-		// // 送金先の残高を増やす
-		// to, err := p.r.IncreaseBalance(ctx, toID, ammount)
-		// if err != nil {
-		// 	return Accounts{}, err
-		// }
-
 		return Accounts{from: from, to: to}, nil
 	}
 
