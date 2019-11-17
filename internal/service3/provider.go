@@ -1,8 +1,9 @@
 package service3
 
-import "context"
-
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // Provider ...
 type Provider struct {

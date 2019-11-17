@@ -27,7 +27,7 @@ func NewMockDB() *MockDB {
 }
 
 // NewMockGateway ...
-func NewMockGateway(db *MockDB) *MockGateway {
+func NewMockGateway(db *MockDB) Repository {
 	return &MockGateway{db}
 }
 

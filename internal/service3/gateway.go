@@ -13,7 +13,7 @@ type Gateway struct {
 }
 
 // NewGateway ...
-func NewGateway(db *sqlxx.Accessor) *Gateway {
+func NewGateway(db *sqlxx.Accessor) Repository {
 	return &Gateway{db}
 }
 
