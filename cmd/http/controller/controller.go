@@ -1,8 +1,12 @@
 package controller
 
-import "github.com/labstack/echo/v4"
+import (
+	"net/http"
 
-import "github.com/rema424/hexample/internal/service1"
+	"github.com/rema424/hexample/internal/service1"
+
+	"github.com/labstack/echo/v4"
+)
 
 // Controller ...
 type Controller struct{}
@@ -20,5 +24,5 @@ func (ctrl *Controller) HandleMessage(c echo.Context) error {
 	}
 
 	service1.AppCoreLogic(c.Request().Context(), arg)
-	return nil
+	return c.String(http.StatusOK, msg)
 }
