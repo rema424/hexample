@@ -1,0 +1,25 @@
+{
+  // IntelliSense を使用して利用可能な属性を学べます。
+  // 既存の属性の説明をホバーして表示します。
+  // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "host": "127.0.0.1",
+      "port": 8080,
+      "program": "${workspaceRoot}/cmd/http",
+      "env": {
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "3306",
+        "DB_USER": "devuser",
+        "DB_PASSWORD": "Passw0rd!",
+        "DB_NAME": "hexample"
+      },
+      "args": []
+    }
+  ]
+}
